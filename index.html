@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Photo Bucket</title>
+  <link rel="stylesheet" href="https://unpkg.com/spectre.css@0.2.14"/>
+  <style>
+    .text-red {
+      color: #e06870;
+    }
+
+    .btn-success, .btn-success:focus {
+      color: white;
+      background-color: #32b643;
+      border-color: #32b643 !important;
+    }
+    .btn-success:hover{
+      background-color: #3db600;
+    }
+  </style>
+</head>
+<body ng-app="test" class="container grid-960" ng-controller="file-upload">
+
+<header>
+  <h1>Image Size Tool</h1>
+  <h4>Upload your images to check if their size meets our requirements</h4>
+</header>
+
+<br/>
+
+<section>
+  <label hidden>
+    <input type="file" name="file" multiple="multiple"/>
+  </label>
+
+  <div class="text-center">
+    <label>
+      <input type="button" class="btn btn-primary btn-lg"
+             ngf-select="uploadFiles($files)" multiple="multiple"
+             accept="image/jpeg,image/png,image/gif,image/jpg" value="Select Pictures"/>
+    </label>
+    <br/><br/>
+  </div>
+
+  <!-- Proxy area to render images - DO NOT REMOVE -->
+  <div ng-show="false">
+    <ul style="list-style: none;">
+      <li ng-repeat="image in images">
+        <img src="" id="{{image.id}}" alt="some image" width="10%" ngf-src="image.src"/>
+      </li>
+    </ul>
+  </div>
+
+  <div ng-if="images.length !== 0">
+    <label>
+      <button type="button" class="btn btn-success" ng-click="findAndCheckImagesDimensions()">Check Dimensions</button>
+      <button type="button" class="btn" ng-click="reset()">Reset</button>
+    </label>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>Thumbnail</th>
+        <th>Name</th>
+        <th>Dimension(x,y)</th>
+        <th>Valid</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tbody>
+      <tr ng-repeat="img in images" ng-class="{'text-red': !img.accepted}">
+        <td>{{$index + 1}}</td>
+        <td><img id="{{img.id}}" src="" alt="Image" ngf-thumbnail="img.src"/></td>
+        <td>{{img.src.name}}</td>
+        <td>{{img.dimensions.width + " x " + img.dimensions.height}}</td>
+        <td>{{img.accepted}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<script src="https://unpkg.com/angular@1.6.4/angular.min.js"></script>
+<script src="https://unpkg.com/ng-file-upload@12.2.13/dist/ng-file-upload-all.min.js"></script>
+<script>
+  const app = angular.module('test', ['ngFileUpload']);
+  app.controller('file-upload', function ($scope, Upload, DimensionsService) {
+    let self = $scope;
+    self.images = [];
+
+    self.uploadFiles = function ($files) {
+      angular.forEach($files, function (file, key) {
+        const object = {
+          id: 'image-' + key, // id for fetching it later from dom
+          src: file, // the original file
+          dimensions: {}, // the dimensions of image
+          accepted: true // do image meet dimension requirements?
+        };
+        this.push(object);
+      }, self.images);
+    };
+
+    self.reset = function(){
+      self.images = [];
+    };
+
+    /**
+     * function that checks if image dimensions are as per required.
+     *
+     * This function requires that images be rendered onto DOM to fetch their original dimensions.
+     *
+     * @modifies $scope.images
+     * */
+    self.findAndCheckImagesDimensions = function () {
+      angular.forEach(self.images, function (file) {
+        let element = document.getElementById(file.id);
+        file.dimensions.height = element.naturalHeight;
+        file.dimensions.width = element.naturalWidth;
+        file.accepted = DimensionsService.check(file.dimensions);
+      });
+    };
+
+  });
+
+
+  app.service('DimensionsService', function () {
+    let dimensions = [
+      {
+        "width": 300,
+        "height": 250
+      },
+      {
+        "width": 336,
+        "height": 280
+      },
+      {
+        "width": 728,
+        "height": 90
+      },
+      {
+        "width": 160,
+        "height": 600
+      },
+      {
+        "width": 320,
+        "height": 480
+      },
+      {
+        "width": 88,
+        "height": 31
+      },
+      {
+        "width": 120,
+        "height": 60
+      },
+      {
+        "width": 120,
+        "height": 240
+      },
+      {
+        "width": 120,
+        "height": 600
+      },
+      {
+        "width": 125,
+        "height": 125
+      },
+      {
+        "width": 180,
+        "height": 150
+      },
+      {
+        "width": 200,
+        "height": 200
+      },
+      {
+        "width": 200,
+        "height": 446
+      },
+      {
+        "width": 220,
+        "height": 90
+      },
+      {
+        "width": 234,
+        "height": 60
+      },
+      {
+        "width": 240,
+        "height": 133
+      },
+      {
+        "width": 250,
+        "height": 250
+      },
+      {
+        "width": 292,
+        "height": 30
+      },
+      {
+        "width": 300,
+        "height": 31
+      },
+      {
+        "width": 300,
+        "height": 50
+      },
+      {
+        "width": 300,
+        "height": 100
+      },
+      {
+        "width": 300,
+        "height": 600
+      },
+      {
+        "width": 300,
+        "height": 1050
+      },
+      {
+        "width": 320,
+        "height": 50
+      },
+      {
+        "width": 320,
+        "height": 100
+      },
+      {
+        "width": 468,
+        "height": 60
+      },
+      {
+        "width": 960,
+        "height": 90
+      },
+      {
+        "width": 970,
+        "height": 66
+      },
+      {
+        "width": 970,
+        "height": 90
+      },
+      {
+        "width": 970,
+        "height": 250
+      }
+    ];
+
+    return {
+      /**
+       * Check if given dimension matches with pre-defined image sizes.
+       * @param dimension Dimension to check. Ensure that width and height properties are defined.
+       * */
+      check: function (dimension) {
+        let isMatched = false;
+
+        for (let i = 0; i < dimensions.length; i++) {
+          let _dimension = dimensions[i];
+          if (_dimension.length === dimension.length && _dimension.width === dimension.width) {
+            isMatched = true;
+          }
+        }
+        return isMatched;
+      },
+      /**
+       * Returns array of acceptable dimensions.
+       * */
+      fetch: function () {
+        return dimensions;
+      }
+    }
+  });
+
+</script>
+
+</body>
+</html>
